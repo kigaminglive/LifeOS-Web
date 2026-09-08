@@ -14,6 +14,7 @@ def get_connection():
 def init_db():
     conn = get_connection()
     cur = conn.cursor()
+
     cur.execute("""
         CREATE TABLE IF NOT EXISTS tasks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,5 +30,20 @@ def init_db():
             completed_at TEXT
         )
     """)
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS decisions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            task_id INTEGER,
+            task_title TEXT,
+            score REAL,
+            reason TEXT,
+            mood TEXT,
+            energy INTEGER,
+            available_time TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     conn.commit()
     conn.close()

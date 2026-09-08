@@ -1,4 +1,4 @@
-from app.models import get_tasks
+from app.models import get_tasks, save_decision
 
 
 def parse_minutes(time_str: str) -> int:
@@ -22,13 +22,13 @@ def score_task(task, energy: int, available_minutes: int):
     est = int(task.get("estimated_minutes", 30))
     if est <= available_minutes:
         time_score = 100
-        reasons.append("Fits your available time")
+        reasons.append("Fits available time")
     elif est <= available_minutes * 1.5:
         time_score = 60
-        reasons.append("Slightly longer than available time")
+        reasons.append("Slightly over available time")
     else:
         time_score = 25
-        reasons.append("Needs more time than you have")
+        reasons.append("Needs more time than available")
     score += time_score * 0.25
 
     need = int(task.get("energy_required", 50))
@@ -62,6 +62,17 @@ def get_recommendation(mood: str, energy: int, available_time: str):
 
     ranked.sort(key=lambda x: x[0], reverse=True)
     best_score, best_task, best_reasons = ranked[0]
+
+    save_decision(
+        task_id=best_task["id"],
+        task_title=best_task["title"],
+        score=best_score,
+        reason=" | ".join(best_reasons),
+        mood=mood,
+        energy=int(energy),
+        available_time=available_time,
+    )
+
     return {
         "task": best_task,
         "score": best_score,

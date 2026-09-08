@@ -46,3 +46,41 @@ def delete_task(task_id: int):
     cur.execute("DELETE FROM tasks WHERE id=?", (task_id,))
     conn.commit()
     conn.close()
+
+
+def save_decision(task_id, task_title, score, reason, mood, energy, available_time):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO decisions
+        (task_id, task_title, score, reason, mood, energy, available_time)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (task_id, task_title, score, reason, mood, energy, available_time))
+    conn.commit()
+    conn.close()
+
+
+def get_decisions(limit=50):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM decisions ORDER BY id DESC LIMIT ?", (limit,))
+    rows = [dict(r) for r in cur.fetchall()]
+    conn.close()
+    return rows
+
+
+def clear_tasks():
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM tasks")
+    cur.execute("DELETE FROM decisions")
+    conn.commit()
+    conn.close()
+
+
+def clear_history():
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM decisions")
+    conn.commit()
+    conn.close()
