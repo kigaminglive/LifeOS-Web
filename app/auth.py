@@ -1,21 +1,25 @@
-from passlib.context import CryptContext
+import bcrypt
 from itsdangerous import URLSafeSerializer, BadSignature
 from fastapi import Request, Response
 from app.database import get_connection
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-# Production mein env variable se lo
 SECRET_KEY = "lifeos-change-this-to-a-long-random-secret"
 serializer = URLSafeSerializer(SECRET_KEY, salt="lifeos-session")
 
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+    return hashed.decode("utf-8")
 
 
 def verify_password(password: str, password_hash: str) -> bool:
-    return pwd_context.verify(password, password_hash)
+    try:
+        return bcrypt.checkpw(
+            password.encode("utf-8"),
+            password_hash.encode("utf-8"),
+        )
+    except Exception:
+        return False
 
 
 def create_user(username: str, password: str):
@@ -70,7 +74,7 @@ def set_session(response: Response, user: dict):
         value=token,
         httponly=True,
         samesite="lax",
-        max_age=60 * 60 * 24 * 30,  # 30 days
+        max_age=60 * 60 * 24 * 30,
     )
 
 
