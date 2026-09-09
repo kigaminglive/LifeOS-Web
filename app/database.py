@@ -16,8 +16,18 @@ def init_db():
     cur = conn.cursor()
 
     cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS tasks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
             title TEXT NOT NULL,
             category TEXT DEFAULT 'Other',
             priority INTEGER DEFAULT 3,
@@ -27,19 +37,15 @@ def init_db():
             deadline TEXT,
             status TEXT DEFAULT 'pending',
             created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-            completed_at TEXT
+            completed_at TEXT,
+            FOREIGN KEY(user_id) REFERENCES users(id)
         )
     """)
-
-    # older DBs ke liye deadline column safe add
-    try:
-        cur.execute("ALTER TABLE tasks ADD COLUMN deadline TEXT")
-    except Exception:
-        pass
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS decisions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
             task_id INTEGER,
             task_title TEXT,
             score REAL,
@@ -47,7 +53,8 @@ def init_db():
             mood TEXT,
             energy INTEGER,
             available_time TEXT,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES users(id)
         )
     """)
 

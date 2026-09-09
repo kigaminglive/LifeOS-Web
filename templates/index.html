@@ -15,16 +15,30 @@
     <header class="header">
       <h1>LifeOS</h1>
       <p>Personal decision system</p>
-      <div class="counts">{{ pending_count }} pending · {{ completed_count }} done</div>
+      <div class="counts">
+        {{ user.username }} · {{ pending_count }} pending · {{ completed_count }} done
+      </div>
     </header>
 
     <!-- HOME / DASHBOARD -->
     <section id="home" class="panel {% if active == 'home' %}active{% endif %}">
       <div class="stat-grid">
-        <div class="stat"><div class="n">{{ analytics.pending }}</div><div class="l">Pending</div></div>
-        <div class="stat"><div class="n">{{ analytics.completed }}</div><div class="l">Completed</div></div>
-        <div class="stat"><div class="n">{{ analytics.completed_today }}</div><div class="l">Today</div></div>
-        <div class="stat"><div class="n">{{ analytics.streak }}</div><div class="l">Streak</div></div>
+        <div class="stat">
+          <div class="n">{{ analytics.pending }}</div>
+          <div class="l">Pending</div>
+        </div>
+        <div class="stat">
+          <div class="n">{{ analytics.completed }}</div>
+          <div class="l">Completed</div>
+        </div>
+        <div class="stat">
+          <div class="n">{{ analytics.completed_today }}</div>
+          <div class="l">Today</div>
+        </div>
+        <div class="stat">
+          <div class="n">{{ analytics.streak }}</div>
+          <div class="l">Streak</div>
+        </div>
       </div>
 
       <div class="card" style="margin-top:12px;">
@@ -57,8 +71,10 @@
       {% if edit_task %}
       <form class="card" action="/tasks/{{ edit_task.id }}/edit" method="post">
         <h2>Edit task</h2>
+
         <label>Title</label>
         <input type="text" name="title" value="{{ edit_task.title }}" required />
+
         <div class="grid-2">
           <div>
             <label>Category</label>
@@ -77,6 +93,7 @@
             </select>
           </div>
         </div>
+
         <div class="grid-2">
           <div>
             <label>Minutes</label>
@@ -87,16 +104,21 @@
             <input type="number" name="energy_required" value="{{ edit_task.energy_required }}" min="0" max="100" />
           </div>
         </div>
+
         <label>Due date</label>
         <input type="date" name="deadline" value="{{ edit_task.deadline or '' }}" />
+
         <button class="btn block" type="submit">Save changes</button>
         <a class="btn block ghost" href="/?tab=tasks" style="display:block;text-align:center;text-decoration:none;margin-top:8px;">Cancel</a>
       </form>
+
       {% else %}
       <form class="card" action="/tasks/add" method="post">
         <h2>New task</h2>
+
         <label>Title</label>
         <input type="text" name="title" placeholder="Task name" required />
+
         <div class="grid-2">
           <div>
             <label>Category</label>
@@ -119,6 +141,7 @@
             </select>
           </div>
         </div>
+
         <div class="grid-2">
           <div>
             <label>Minutes</label>
@@ -129,18 +152,23 @@
             <input type="number" name="energy_required" value="50" min="0" max="100" />
           </div>
         </div>
+
         <label>Due date</label>
         <input type="date" name="deadline" />
+
         <button class="btn block" type="submit">Add task</button>
       </form>
       {% endif %}
 
       <div class="list-title">Tasks</div>
+
       {% if tasks %}
         {% for task in tasks %}
         <div class="card task {% if task.status == 'completed' %}done{% endif %}">
           <div>
-            <div class="task-title">{% if task.status == 'completed' %}[done] {% endif %}{{ task.title }}</div>
+            <div class="task-title">
+              {% if task.status == 'completed' %}[done] {% endif %}{{ task.title }}
+            </div>
             <div class="task-meta">
               {{ task.category }} · P{{ task.priority }} · {{ task.estimated_minutes }}m · E{{ task.energy_required }}
               {% if task.deadline %} · due {{ task.deadline }}{% endif %}
@@ -148,10 +176,14 @@
           </div>
           <div class="task-actions">
             {% if task.status != 'completed' %}
-            <form action="/tasks/{{ task.id }}/complete" method="post"><button class="btn small ghost" type="submit">Done</button></form>
+            <form action="/tasks/{{ task.id }}/complete" method="post">
+              <button class="btn small ghost" type="submit">Done</button>
+            </form>
             {% endif %}
             <a class="btn small ghost" href="/tasks/{{ task.id }}/edit" style="text-decoration:none;">Edit</a>
-            <form action="/tasks/{{ task.id }}/delete" method="post"><button class="btn small danger" type="submit">Del</button></form>
+            <form action="/tasks/{{ task.id }}/delete" method="post">
+              <button class="btn small danger" type="submit">Del</button>
+            </form>
           </div>
         </div>
         {% endfor %}
@@ -164,6 +196,7 @@
     <section id="decide" class="panel {% if active == 'decide' %}active{% endif %}">
       <form class="card" action="/decide" method="post">
         <h2>Current state</h2>
+
         <label>Mood</label>
         <select name="mood">
           {% set current_mood = mood if mood is defined else 'Neutral' %}
@@ -171,8 +204,17 @@
           <option value="{{ m }}" {% if current_mood == m %}selected{% endif %}>{{ m }}</option>
           {% endfor %}
         </select>
+
         <label>Energy: <span id="energyVal">{{ energy if energy is defined else 50 }}</span>%</label>
-        <input type="range" name="energy" id="energy" min="0" max="100" value="{{ energy if energy is defined else 50 }}" />
+        <input
+          type="range"
+          name="energy"
+          id="energy"
+          min="0"
+          max="100"
+          value="{{ energy if energy is defined else 50 }}"
+        />
+
         <label>Available time</label>
         {% set current_time = available_time if available_time is defined else '30 min' %}
         <select name="available_time">
@@ -180,8 +222,10 @@
           <option value="{{ t }}" {% if current_time == t %}selected{% endif %}>{{ t }}</option>
           {% endfor %}
         </select>
+
         <button class="btn block" type="submit">Get recommendation</button>
       </form>
+
       {% if recommendation %}
       <div class="card">
         <h2>Recommendation</h2>
@@ -199,11 +243,14 @@
     <!-- HISTORY -->
     <section id="history" class="panel {% if active == 'history' %}active{% endif %}">
       <div class="list-title">Decision history</div>
+
       {% if history %}
         {% for h in history %}
         <div class="card">
           <div class="htitle">{{ h.task_title }}</div>
-          <div class="hmeta">Score {{ h.score }} · {{ h.mood }} · E{{ h.energy }} · {{ h.available_time }}</div>
+          <div class="hmeta">
+            Score {{ h.score }} · {{ h.mood }} · E{{ h.energy }} · {{ h.available_time }}
+          </div>
           <div class="hmeta" style="margin-top:6px;">{{ h.reason }}</div>
         </div>
         {% endfor %}
@@ -215,28 +262,51 @@
     <!-- SETTINGS -->
     <section id="settings" class="panel {% if active == 'settings' %}active{% endif %}">
       <div class="card">
+        <h2>Account</h2>
+        <div class="hmeta" style="margin-bottom:12px;">Signed in as {{ user.username }}</div>
+        <form action="/logout" method="post">
+          <button class="btn block ghost" type="submit">Logout</button>
+        </form>
+      </div>
+
+      <div class="card">
         <h2>Data</h2>
-        <a class="btn block ghost" href="/export.csv" style="display:block;text-align:center;text-decoration:none;">Export CSV</a>
+        <a class="btn block ghost" href="/export.csv" style="display:block;text-align:center;text-decoration:none;">
+          Export CSV
+        </a>
+
         <form action="/settings/clear-history" method="post" onsubmit="return confirm('Clear history?')">
           <button class="btn block ghost" type="submit" style="margin-top:10px;">Clear history</button>
         </form>
-        <form action="/settings/clear-tasks" method="post" onsubmit="return confirm('Delete all tasks?')">
+
+        <form action="/settings/clear-tasks" method="post" onsubmit="return confirm('Delete all your tasks?')">
           <button class="btn block danger" type="submit" style="margin-top:10px;">Clear all tasks</button>
         </form>
       </div>
+
       <div class="card">
         <h2>About</h2>
-        <div class="hmeta">LifeOS Web · decision + tasks · black/white UI</div>
+        <div class="hmeta">LifeOS Web · multi-user · black/white UI</div>
       </div>
     </section>
   </div>
 
   <nav class="nav">
-    <button type="button" data-tab="home" class="{% if active == 'home' %}active{% endif %}"><span class="ico">⌂</span>Home</button>
-    <button type="button" data-tab="tasks" class="{% if active == 'tasks' %}active{% endif %}"><span class="ico">☰</span>Tasks</button>
-    <button type="button" data-tab="decide" class="{% if active == 'decide' %}active{% endif %}"><span class="ico">◎</span>Decide</button>
-    <button type="button" data-tab="history" class="{% if active == 'history' %}active{% endif %}"><span class="ico">◔</span>History</button>
-    <button type="button" data-tab="settings" class="{% if active == 'settings' %}active{% endif %}"><span class="ico">⚙</span>Settings</button>
+    <button type="button" data-tab="home" class="{% if active == 'home' %}active{% endif %}">
+      <span class="ico">⌂</span>Home
+    </button>
+    <button type="button" data-tab="tasks" class="{% if active == 'tasks' %}active{% endif %}">
+      <span class="ico">☰</span>Tasks
+    </button>
+    <button type="button" data-tab="decide" class="{% if active == 'decide' %}active{% endif %}">
+      <span class="ico">◎</span>Decide
+    </button>
+    <button type="button" data-tab="history" class="{% if active == 'history' %}active{% endif %}">
+      <span class="ico">◔</span>History
+    </button>
+    <button type="button" data-tab="settings" class="{% if active == 'settings' %}active{% endif %}">
+      <span class="ico">⚙</span>Settings
+    </button>
   </nav>
 
   <script src="/static/app.js"></script>

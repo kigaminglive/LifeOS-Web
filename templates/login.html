@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <title>LifeOS — Login</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="app" style="padding-top:40px;">
+    <header class="header">
+      <h1>LifeOS</h1>
+      <p>{% if mode == 'register' %}Create account{% else %}Sign in{% endif %}</p>
+    </header>
+
+    <form class="card" method="post" action="{% if mode == 'register' %}/register{% else %}/login{% endif %}">
+      <h2>{% if mode == 'register' %}Register{% else %}Login{% endif %}</h2>
+
+      {% if error %}
+      <div class="empty" style="margin-bottom:12px;">{{ error }}</div>
+      {% endif %}
+
+      <label>Username</label>
+      <input type="text" name="username" required autocomplete="username" />
+
+      <label>Password</label>
+      <input type="password" name="password" required autocomplete="current-password" />
+
+      <button class="btn block" type="submit">
+        {% if mode == 'register' %}Create account{% else %}Sign in{% endif %}
+      </button>
+    </form>
+
+    <div class="empty">
+      {% if mode == 'register' %}
+        Already have an account?
+        <a href="/login" style="color:#fff;">Sign in</a>
+      {% else %}
+        New here?
+        <a href="/register" style="color:#fff;">Create account</a>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>

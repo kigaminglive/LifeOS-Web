@@ -46,17 +46,15 @@ def score_task(task, energy: int, available_minutes: int):
         diff_score = 70
     score += diff_score * 0.20
 
-    # light deadline boost
-    deadline = task.get("deadline")
-    if deadline:
+    if task.get("deadline"):
         score += 5
-        reasons.append(f"Deadline {deadline}")
+        reasons.append(f"Deadline {task.get('deadline')}")
 
     return round(min(score, 100), 1), reasons
 
 
-def get_recommendation(mood: str, energy: int, available_time: str):
-    tasks = get_tasks(status="pending")
+def get_recommendation(user_id, mood: str, energy: int, available_time: str):
+    tasks = get_tasks(user_id, status="pending")
     if not tasks:
         return None
 
@@ -70,6 +68,7 @@ def get_recommendation(mood: str, energy: int, available_time: str):
     best_score, best_task, best_reasons = ranked[0]
 
     save_decision(
+        user_id=user_id,
         task_id=best_task["id"],
         task_title=best_task["title"],
         score=best_score,
