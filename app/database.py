@@ -31,6 +31,12 @@ def init_db():
         )
     """)
 
+    # older DBs ke liye deadline column safe add
+    try:
+        cur.execute("ALTER TABLE tasks ADD COLUMN deadline TEXT")
+    except Exception:
+        pass
+
     cur.execute("""
         CREATE TABLE IF NOT EXISTS decisions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

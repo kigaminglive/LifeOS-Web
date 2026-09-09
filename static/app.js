@@ -1,10 +1,8 @@
 function showTab(id) {
   document.querySelectorAll(".panel").forEach((p) => p.classList.remove("active"));
   document.querySelectorAll(".nav button").forEach((b) => b.classList.remove("active"));
-
   const panel = document.getElementById(id);
   if (panel) panel.classList.add("active");
-
   const btn = document.querySelector(`.nav button[data-tab="${id}"]`);
   if (btn) btn.classList.add("active");
 }
@@ -21,7 +19,6 @@ if (energy && energyVal) {
   });
 }
 
-// URL tab support (?tab=settings)
 const params = new URLSearchParams(window.location.search);
 const tab = params.get("tab");
 if (tab) showTab(tab);
